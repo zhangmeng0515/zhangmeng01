@@ -19,8 +19,9 @@ def get_json(url, num):  # 获取JSON，获取第几页数据
         return ''
 
 def get_a_page(result):  # 获取一页的信息
-    field = ['companyFullName','companyShortName','companySize','financeStage','district',
-             'positionName','workYear','education','salary','positionAdvantage']  # 要获取哪些字段信息
+    field = ['companyFullName','companyShortName','createTime','companySize','financeStage','district','positionName',
+             'firstType','secondType','thirdType','industryField','positionLables','skillLables','jobNature',
+             'resumeProcessDay','workYear','education','salary','positionAdvantage']  # 要获取哪些字段信息
     page_info = []
     try:
         for i in result:
@@ -33,8 +34,8 @@ def get_a_page(result):  # 获取一页的信息
     
 def get_pages(count):
     num = math.ceil(count/15)
-    if num >= 30:
-        return 30
+    if num >= 100:
+        return 100
     else:
         return num
     
@@ -42,7 +43,7 @@ def main():
     url = 'https://www.lagou.com/jobs/positionAjax.json?city=%E6%B7%B1%E5%9C%B3&needAddtionalResult=false'
     page_1 = get_json(url, 1)  # 总职位数在每页的json字典中都有显示，这里随便选了第一页
     total_count = page_1['content']['positionResult']['totalCount'] 
-    num=get_pages(total_count)  #每页15个职位，总职位数300多个，比较少
+    num=get_pages(total_count)  
     total_info=[]
     print('职位总数:{},页数:{}'.format(total_count, num))
     start= time.time()
@@ -55,7 +56,9 @@ def main():
         print('已经抓取第{}页,职位总数:{}，当前总耗时{:.2f}秒'.format(n, str(len(total_info)), time.time()-start))
         time.sleep(10)# 暂停10秒，防止被服务器拉黑
     # 把list转为DataFrame
-    df=pd.DataFrame(data=total_info,columns=['公司全名','公司简称','公司规模','融资阶段','区域','职位名称','工作经验','学历要求','工资','职位福利'])
+    df=pd.DataFrame(data=total_info,columns=['公司全名','公司简称','创办时间','公司规模','融资阶段','区域','职位名称',
+                                             '岗位类型1级','岗位类型2级','岗位类型3级','行业领域','职位标签','技能标签','工作形式',
+                                             '简历处理时间','工作经验','学历要求','工资','职位福利'])
     df.to_csv(r'C:\Users\a\AppData\Local\Programs\Python\Python37\lagou_jobs2323.csv',index=False)
     print('CSV保存成功')
 
